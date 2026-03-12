@@ -188,7 +188,8 @@ function rebuildRoot(root, source, fontName, settings) {
 }
 
 function removeGenerated(root) {
-  for (const child of [...root.children]) {
+  const children = root.children.slice();
+  for (const child of children) {
     if (child.getPluginData(ROLE_KEY) === "generated") {
       child.remove();
     }
@@ -567,7 +568,19 @@ function cloneLineHeight(lineHeight, stretch) {
 }
 
 function sanitizeSettings(input) {
-  const raw = { ...DEFAULT_SETTINGS, ...input };
+  const raw = {};
+  const defaultKeys = Object.keys(DEFAULT_SETTINGS);
+  for (let i = 0; i < defaultKeys.length; i += 1) {
+    const key = defaultKeys[i];
+    raw[key] = DEFAULT_SETTINGS[key];
+  }
+
+  const inputKeys = Object.keys(input || {});
+  for (let i = 0; i < inputKeys.length; i += 1) {
+    const key = inputKeys[i];
+    raw[key] = input[key];
+  }
+
   return {
     preset: String(raw.preset || DEFAULT_SETTINGS.preset),
     seed: intInRange(raw.seed, 1, 9999),
