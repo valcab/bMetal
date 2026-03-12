@@ -219,7 +219,7 @@ function readSettings(root) {
       return DEFAULT_SETTINGS;
     }
     return sanitizeSettings(JSON.parse(raw));
-  } catch {
+  } catch (error) {
     return DEFAULT_SETTINGS;
   }
 }
