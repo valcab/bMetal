@@ -157,8 +157,8 @@ function rebuildRoot(root, source, fontName, settings) {
   removeGenerated(root);
   root.setPluginData(SETTINGS_KEY, JSON.stringify(settings));
 
-  source.fills = [solidPaint(0.03)];
-  source.opacity = 1;
+  source.fills = [solidPaint(0.97)];
+  source.opacity = 0.9;
   source.visible = true;
   source.rotation = 0;
 
@@ -288,34 +288,36 @@ function addHalo(parent, width, height, settings, rng) {
     return;
   }
 
-  const halo = figma.createEllipse();
-  halo.name = "Halo";
-  halo.resize(width * 1.34, height * 1.68);
-  halo.x = (width - halo.width) / 2;
-  halo.y = (height - halo.height) / 2;
-  halo.fills = [solidPaint(0.02)];
-  halo.opacity = settings.halo;
-  parent.appendChild(halo);
+  const moon = figma.createEllipse();
+  moon.name = "Moon";
+  moon.resize(width * 0.18, width * 0.18);
+  moon.x = width * 0.5 - moon.width / 2;
+  moon.y = -height * (0.5 + settings.halo * 0.2);
+  moon.fills = [];
+  moon.strokes = [solidPaint(0.97)];
+  moon.strokeWeight = 1;
+  moon.opacity = 0.3 + settings.halo * 0.5;
+  parent.appendChild(moon);
 
-  const hazeCount = Math.max(0, Math.round(settings.haze * 10));
-  for (let i = 0; i < hazeCount; i += 1) {
-    const mist = figma.createEllipse();
-    const scale = 0.3 + rng() * 0.55;
-    mist.resize(width * scale, height * (0.15 + rng() * 0.32));
-    mist.x = rng() * width - mist.width * 0.2;
-    mist.y = height * (0.1 + rng() * 0.85) - mist.height / 2;
-    mist.rotation = -18 + rng() * 36;
-    mist.fills = [solidPaint(0.02)];
-    mist.opacity = 0.05 + settings.haze * 0.16;
-    parent.appendChild(mist);
+  const starCount = Math.max(12, Math.round(24 + settings.haze * 80));
+  for (let i = 0; i < starCount; i += 1) {
+    const star = figma.createEllipse();
+    const size = 0.8 + rng() * 2.2;
+    star.resize(size, size);
+    star.x = width * 0.15 + rng() * width * 0.7;
+    star.y = -height * 0.45 + rng() * height * 0.18;
+    star.fills = [solidPaint(0.97)];
+    star.opacity = 0.15 + rng() * 0.6;
+    parent.appendChild(star);
   }
 }
 
 function addShadowText(parent, source, textStyle, settings, rng) {
-  const cloneCount = Math.max(0, Math.round(settings.cloneLayers));
+  const cloneCount = Math.max(8, Math.round(settings.cloneLayers * 3));
+  const spread = Math.max(1, settings.cloneSpread * 0.35);
   for (let i = 0; i < cloneCount; i += 1) {
     const clone = figma.createText();
-    clone.name = `Rough Clone ${i + 1}`;
+    clone.name = "Ink Mass";
     clone.fontName = textStyle.fontName;
     clone.characters = source.characters;
     clone.fontSize = textStyle.fontSize;
@@ -324,164 +326,210 @@ function addShadowText(parent, source, textStyle, settings, rng) {
     clone.letterSpacing = cloneSpacing(textStyle.letterSpacing, settings.tracking);
     clone.lineHeight = cloneLineHeight(textStyle.lineHeight, settings.verticalStretch);
     clone.textAutoResize = "WIDTH_AND_HEIGHT";
-    clone.fills = [solidPaint(0.02)];
-    clone.opacity = clamp(0.06 + (1 - i / Math.max(1, cloneCount)) * 0.18, 0, 0.28);
-    clone.x = randomRange(rng, -settings.cloneSpread, settings.cloneSpread);
-    clone.y = randomRange(rng, -settings.cloneSpread, settings.cloneSpread);
-    clone.rotation = randomRange(
-      rng,
-      -8 - settings.chaos * 8,
-      8 + settings.chaos * 8
-    );
+    clone.fills = [solidPaint(0.97)];
+    clone.opacity = clamp(0.14 + (i / cloneCount) * 0.07, 0.14, 0.22);
+    clone.x = randomRange(rng, -spread, spread);
+    clone.y = randomRange(rng, -spread * 0.6, spread * 0.6);
+    clone.rotation = randomRange(rng, -2 - settings.chaos * 4, 2 + settings.chaos * 4);
     parent.appendChild(clone);
   }
 }
 
 function addBranches(parent, width, height, centerX, centerY, settings, rng) {
-  const branchCount = Math.max(4, Math.round(settings.branches));
-  for (let i = 0; i < branchCount; i += 1) {
-    const progress = i / branchCount;
-    const side = progress < 0.5 ? "top" : "bottom";
-    const mirrored = rng() < settings.symmetry;
-    const xBase = rng() * width;
-    const yBase =
-      side === "top"
-        ? randomRange(rng, -height * 0.08, height * 0.25)
-        : randomRange(rng, height * 0.72, height * 1.02);
+  addTopSpires(parent, width, height, centerX, settings, rng);
+  addSideAntlers(parent, width, height, settings, rng);
+  addRootCurtain(parent, width, height, settings, rng);
+}
 
-    createBranchCluster(parent, {
-      x: xBase,
-      y: yBase,
-      side,
-      width,
-      height,
-      centerX,
-      centerY,
-      settings,
-      rng,
-      mirrored
+function addTopSpires(parent, width, height, centerX, settings, rng) {
+  const spireCount = Math.max(6, Math.round(settings.branches * 0.22));
+  for (let i = 0; i < spireCount; i += 1) {
+    const baseX = width * (0.15 + rng() * 0.7);
+    const length = height * (0.35 + rng() * 0.55);
+    spawnFilament(parent, {
+      x: baseX,
+      y: height * (0.1 + rng() * 0.15),
+      angle: 180 + randomRange(rng, -10, 10),
+      length,
+      thickness: Math.max(1, settings.branchWeight * 0.28),
+      brightness: 0.97,
+      depth: 2,
+      branchChance: 0.28 + settings.chaos * 0.18,
+      taper: 0.76,
+      rng
+    });
+
+    if (rng() < settings.symmetry) {
+      spawnFilament(parent, {
+        x: centerX + (centerX - baseX),
+        y: height * (0.1 + rng() * 0.15),
+        angle: 180 + randomRange(rng, -10, 10),
+        length,
+        thickness: Math.max(1, settings.branchWeight * 0.28),
+        brightness: 0.97,
+        depth: 2,
+        branchChance: 0.28 + settings.chaos * 0.18,
+        taper: 0.76,
+        rng
+      });
+    }
+  }
+
+  spawnFilament(parent, {
+    x: centerX,
+    y: height * 0.02,
+    angle: 180,
+    length: height * (0.55 + settings.halo * 0.3),
+    thickness: Math.max(1.2, settings.branchWeight * 0.34),
+    brightness: 0.97,
+    depth: 1,
+    branchChance: 0.14,
+    taper: 0.82,
+    rng
+  });
+}
+
+function addSideAntlers(parent, width, height, settings, rng) {
+  const sideCount = Math.max(6, Math.round(settings.branches * 0.16));
+  for (let i = 0; i < sideCount; i += 1) {
+    const y = height * (0.16 + rng() * 0.32);
+    const length = width * (0.12 + rng() * 0.16);
+    spawnFilament(parent, {
+      x: width * (0.08 + rng() * 0.1),
+      y,
+      angle: -90 + randomRange(rng, -22, 22),
+      length,
+      thickness: Math.max(1, settings.branchWeight * 0.26),
+      brightness: 0.97,
+      depth: 3,
+      branchChance: 0.34 + settings.chaos * 0.18,
+      taper: 0.78,
+      rng
+    });
+    spawnFilament(parent, {
+      x: width * (0.92 - rng() * 0.1),
+      y,
+      angle: 90 + randomRange(rng, -22, 22),
+      length,
+      thickness: Math.max(1, settings.branchWeight * 0.26),
+      brightness: 0.97,
+      depth: 3,
+      branchChance: 0.34 + settings.chaos * 0.18,
+      taper: 0.78,
+      rng
     });
   }
 }
 
-function createBranchCluster(parent, context) {
+function addRootCurtain(parent, width, height, settings, rng) {
+  const rootCount = Math.max(18, Math.round(settings.branches * 1.4 + settings.drips));
+  for (let i = 0; i < rootCount; i += 1) {
+    const t = i / Math.max(1, rootCount - 1);
+    const mirroredT = t < 0.5 ? t * 2 : (1 - t) * 2;
+    const centerBias = 1 - Math.pow(mirroredT, 1.6);
+    const x = width * 0.08 + t * width * 0.84 + randomRange(rng, -6, 6);
+    const y = height * (0.52 - centerBias * 0.14 + rng() * 0.1);
+    const length = settings.branchLength * (0.7 + centerBias * 0.7 + rng() * 0.55);
+    const depth = centerBias > 0.6 ? 4 : 3;
+    spawnFilament(parent, {
+      x,
+      y,
+      angle: randomRange(rng, -14, 14),
+      length,
+      thickness: Math.max(1, settings.branchWeight * (0.22 + centerBias * 0.26)),
+      brightness: 0.97,
+      depth,
+      branchChance: 0.42 + centerBias * 0.18 + settings.chaos * 0.08,
+      taper: 0.72,
+      rng
+    });
+  }
+}
+
+function spawnFilament(parent, options) {
   const {
     x,
     y,
-    side,
-    width,
-    height,
-    centerX,
-    settings,
-    rng,
-    mirrored
-  } = context;
+    angle,
+    length,
+    thickness,
+    brightness,
+    depth,
+    branchChance,
+    taper,
+    rng
+  } = options;
 
-  const segments = 1 + Math.floor(rng() * 3);
+  const segments = Math.max(2, Math.round(3 + length / 42));
+  let currentX = x;
+  let currentY = y;
+  let currentAngle = angle;
+  let currentThickness = thickness;
+  const segmentLength = length / segments;
+
   for (let i = 0; i < segments; i += 1) {
-    const weight =
-      Math.max(1, settings.branchWeight * (0.55 + rng() * 0.85)) *
-      (1 - i * 0.16);
-    const length =
-      settings.branchLength * (0.34 + rng() * 0.92) * (1 - i * 0.12);
-    const angleBase = side === "top" ? -90 : 90;
-    const pull = x < centerX ? -1 : 1;
-    const chaosAngle = randomRange(rng, -50, 50) * settings.chaos;
-    const curveAngle = pull * randomRange(rng, 8, 32);
-    const angle = angleBase + chaosAngle + curveAngle;
-    const segment = createSpike(length, weight, settings.chaos, rng);
-    segment.x = x + randomRange(rng, -12, 12);
-    segment.y = y + randomRange(rng, -10, 10);
-    segment.rotation = angle;
+    const pieceLength = segmentLength * (0.72 + rng() * 0.7);
+    const segment = figma.createRectangle();
+    const widthPx = Math.max(1, currentThickness);
+    const heightPx = Math.max(3, pieceLength);
+    segment.resize(widthPx, heightPx);
+    segment.cornerRadius = widthPx / 2;
+    segment.fills = [solidPaint(brightness)];
+    segment.opacity = clamp(0.72 + rng() * 0.2, 0.72, 0.96);
+    segment.x = currentX - widthPx / 2;
+    segment.y = currentY;
+    segment.rotation = currentAngle;
     parent.appendChild(segment);
 
-    if (mirrored) {
-      const twin = segment.clone();
-      twin.x = width - segment.x - twin.width;
-      twin.rotation = -(angle - angleBase) + angleBase;
-      parent.appendChild(twin);
-    }
+    const radians = (currentAngle * Math.PI) / 180;
+    currentX += Math.sin(radians) * pieceLength;
+    currentY += Math.cos(radians) * pieceLength;
+    currentAngle += randomRange(rng, -12, 12);
+    currentThickness = Math.max(0.7, currentThickness * taper);
 
-    const offshootCount = 1 + Math.floor(rng() * 2);
-    for (let j = 0; j < offshootCount; j += 1) {
-      const twig = createSpike(length * (0.22 + rng() * 0.26), weight * 0.55, settings.chaos, rng);
-      twig.x = segment.x + segment.width * (0.2 + rng() * 0.5);
-      twig.y = segment.y + segment.height * (0.2 + rng() * 0.4);
-      twig.rotation = angle + randomRange(rng, -65, 65);
-      twig.opacity = 0.82;
-      parent.appendChild(twig);
-
-      if (mirrored && rng() < 0.7) {
-        const twinTwig = twig.clone();
-        twinTwig.x = width - twig.x - twinTwig.width;
-        twinTwig.rotation = -(twig.rotation - angleBase) + angleBase;
-        parent.appendChild(twinTwig);
-      }
+    if (depth > 0 && rng() < branchChance) {
+      const direction = rng() < 0.5 ? -1 : 1;
+      spawnFilament(parent, {
+        x: currentX,
+        y: currentY,
+        angle: currentAngle + direction * randomRange(rng, 18, 42),
+        length: pieceLength * (0.65 + rng() * 0.75),
+        thickness: currentThickness * 0.78,
+        brightness,
+        depth: depth - 1,
+        branchChance: branchChance * 0.72,
+        taper: 0.74,
+        rng
+      });
     }
   }
-
-  if (rng() < settings.symmetry * 0.3) {
-    const crown = createSpike(
-      settings.branchLength * 0.42,
-      settings.branchWeight * 0.8,
-      settings.chaos,
-      rng
-    );
-    crown.x = width * 0.5 - crown.width / 2 + randomRange(rng, -14, 14);
-    crown.y = side === "top" ? -crown.height * 0.35 : height - crown.height * 0.1;
-    crown.rotation = side === "top" ? randomRange(rng, -16, 16) : 180 + randomRange(rng, -16, 16);
-    parent.appendChild(crown);
-  }
-}
-
-function createSpike(length, thickness, chaos, rng) {
-  const spike = figma.createRectangle();
-  spike.resize(Math.max(4, length), Math.max(1, thickness));
-  spike.cornerRadius = Math.max(0.4, thickness * 0.46);
-  spike.fills = [solidPaint(0.02)];
-  spike.opacity = clamp(0.74 + chaos * 0.16 + rng() * 0.12, 0.72, 1);
-  return spike;
 }
 
 function addDrips(parent, width, height, settings, rng) {
-  const dripCount = Math.max(0, Math.round(settings.drips));
+  const dripCount = Math.max(8, Math.round(settings.drips * 1.6));
   for (let i = 0; i < dripCount; i += 1) {
     const drip = figma.createRectangle();
-    const dripHeight = settings.dripLength * (0.25 + rng() * 1.35);
-    const dripWidth = Math.max(1.5, settings.branchWeight * (0.28 + rng() * 0.35));
-    drip.resize(dripWidth, dripHeight);
-    drip.cornerRadius = dripWidth / 2;
-    drip.fills = [solidPaint(0.02)];
-    drip.opacity = 0.5 + rng() * 0.28;
-    drip.x = rng() * width;
-    drip.y = height * 0.82 + rng() * (height * 0.26);
-    drip.rotation = randomRange(rng, -9, 9);
+    const dripHeight = settings.dripLength * (0.65 + rng() * 1.6);
+    drip.resize(1, dripHeight);
+    drip.cornerRadius = 0.5;
+    drip.fills = [solidPaint(0.97)];
+    drip.opacity = 0.45 + rng() * 0.35;
+    drip.x = width * (0.08 + rng() * 0.84);
+    drip.y = height * (0.2 + rng() * 0.65);
     parent.appendChild(drip);
-
-    if (rng() < 0.55) {
-      const bulb = figma.createEllipse();
-      bulb.resize(dripWidth * (1.4 + rng() * 1.4), dripWidth * (1.4 + rng() * 1.4));
-      bulb.x = drip.x - (bulb.width - dripWidth) / 2;
-      bulb.y = drip.y + dripHeight - bulb.height * 0.65;
-      bulb.fills = [solidPaint(0.02)];
-      bulb.opacity = drip.opacity;
-      parent.appendChild(bulb);
-    }
   }
 }
 
 function addFrost(parent, width, height, settings, rng) {
-  const count = Math.max(0, Math.round(settings.frost * 28));
+  const count = Math.max(0, Math.round(settings.frost * 48));
   for (let i = 0; i < count; i += 1) {
-    const crystal = figma.createRectangle();
-    const size = 3 + rng() * 9;
-    crystal.resize(size, Math.max(1, size * 0.24));
-    crystal.cornerRadius = size * 0.12;
-    crystal.fills = [solidColor(0.92, 0.92, 0.92)];
-    crystal.opacity = 0.08 + rng() * settings.frost * 0.25;
-    crystal.x = rng() * width;
-    crystal.y = randomRange(rng, -height * 0.08, height * 1.1);
-    crystal.rotation = rng() * 360;
+    const crystal = figma.createEllipse();
+    const size = 0.8 + rng() * 2.4;
+    crystal.resize(size, size);
+    crystal.fills = [solidColor(1, 1, 1)];
+    crystal.opacity = 0.16 + rng() * settings.frost * 0.35;
+    crystal.x = width * (0.18 + rng() * 0.64);
+    crystal.y = -height * 0.28 + rng() * height * 0.18;
     parent.appendChild(crystal);
   }
 }
