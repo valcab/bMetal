@@ -299,8 +299,7 @@ function addHalo(parent, width, height, settings, rng) {
     {
       type: "LAYER_BLUR",
       radius: 28 + settings.halo * 120,
-      visible: true,
-      blendMode: "NORMAL"
+      visible: true
     }
   ];
   parent.appendChild(halo);
@@ -319,8 +318,7 @@ function addHalo(parent, width, height, settings, rng) {
       {
         type: "LAYER_BLUR",
         radius: 12 + rng() * 22,
-        visible: true,
-        blendMode: "NORMAL"
+        visible: true
       }
     ];
     parent.appendChild(mist);
@@ -463,8 +461,7 @@ function createSpike(length, thickness, chaos, rng) {
       offset: { x: 0, y: 0 },
       radius: 2 + chaos * 6,
       spread: 0,
-      visible: true,
-      blendMode: "NORMAL"
+      visible: true
     }
   ];
   return spike;
