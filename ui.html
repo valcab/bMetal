@@ -3,167 +3,60 @@
   <head>
     <meta charset="UTF-8" />
     <title>Black Metal Typography</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ash: "#f5f2ef",
+              fog: "#d8d0c6",
+              mist: "#aaa1a6",
+              blood: "#8d1723",
+              ember: "#a11d2d",
+              cinder: "#5d0e17",
+              panel: "#161218",
+              panelSoft: "#1b161d"
+            },
+            fontFamily: {
+              display: ["Georgia", "\"Times New Roman\"", "serif"]
+            },
+            boxShadow: {
+              blood: "0 0 0 1px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.03)"
+            }
+          }
+        }
+      };
+    </script>
     <style>
       :root {
         color-scheme: dark;
-        --bg: #0d0d0f;
-        --panel: #161218;
-        --panel-2: #1f1820;
-        --ink: #f5f2ef;
-        --muted: #aaa1a6;
-        --accent: #d8d0c6;
-        --blood: #8d1723;
-        --line: rgba(255, 255, 255, 0.08);
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        font: 12px/1.4 Georgia, "Times New Roman", serif;
-        background:
-          radial-gradient(circle at top, rgba(141, 23, 35, 0.24), transparent 32%),
-          linear-gradient(180deg, #09090a 0%, #120f13 60%, #0d0d0f 100%);
-        color: var(--ink);
-      }
-
-      .shell {
-        padding: 16px;
-      }
-
-      .hero {
-        border: 1px solid var(--line);
-        background:
-          linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent 55%),
-          linear-gradient(180deg, rgba(141, 23, 35, 0.18), rgba(0, 0, 0, 0.22));
-        padding: 14px;
-        margin-bottom: 14px;
-      }
-
-      h1 {
-        margin: 0;
-        font-size: 20px;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        font-weight: 700;
-      }
-
-      .sub {
-        margin-top: 6px;
-        color: var(--muted);
-      }
-
-      .status {
-        margin-top: 8px;
-        padding: 8px 10px;
-        border-left: 2px solid var(--blood);
-        background: rgba(255, 255, 255, 0.04);
-        color: var(--accent);
-        min-height: 34px;
-      }
-
-      .presets {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 8px;
-        margin-bottom: 14px;
-      }
-
-      button,
-      input,
-      select {
-        font: inherit;
-      }
-
-      .preset,
-      .apply {
-        border: 1px solid var(--line);
-        background: var(--panel);
-        color: var(--ink);
-        padding: 9px 10px;
-        cursor: pointer;
-      }
-
-      .preset.active {
-        background: linear-gradient(180deg, rgba(141, 23, 35, 0.5), rgba(22, 18, 24, 1));
-        border-color: rgba(216, 208, 198, 0.4);
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-      }
-
-      .control {
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.03);
-        padding: 10px;
-      }
-
-      .control label {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        gap: 10px;
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-size: 10px;
-        color: var(--muted);
-      }
-
-      .control output {
-        color: var(--ink);
       }
 
       input[type="range"] {
         width: 100%;
         accent-color: #b2313c;
       }
-
-      .footer {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-top: 14px;
-      }
-
-      .apply {
-        background: linear-gradient(180deg, #a11d2d, #5d0e17);
-        border-color: rgba(255, 255, 255, 0.1);
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      .note {
-        margin-top: 12px;
-        color: var(--muted);
-        font-size: 11px;
-      }
     </style>
   </head>
-  <body>
-    <div class="shell">
-      <div class="hero">
-        <h1>Black Metal Typography</h1>
-        <div class="sub">Editable text with dense white ink mass, cathedral spires, mirrored roots, and atmospheric detail.</div>
-        <div class="status" id="status">Select a text layer to begin.</div>
+  <body class="m-0 min-h-screen bg-[radial-gradient(circle_at_top,rgba(141,23,35,0.24),transparent_32%),linear-gradient(180deg,#09090a_0%,#120f13_60%,#0d0d0f_100%)] font-display text-[12px] leading-[1.4] text-ash">
+    <div class="p-4">
+      <div class="mb-4 border border-white/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.05),transparent_55%),linear-gradient(180deg,rgba(141,23,35,0.18),rgba(0,0,0,0.22))] p-3.5 shadow-blood">
+        <h1 class="m-0 text-[20px] font-bold uppercase tracking-[0.08em]">Black Metal Typography</h1>
+        <div class="mt-1.5 text-mist">Editable text with dense white ink mass, cathedral spires, mirrored roots, and atmospheric detail.</div>
+        <div class="mt-2 min-h-[34px] border-l-2 border-blood bg-white/5 px-2.5 py-2 text-fog" id="status">Select a text layer to begin.</div>
       </div>
 
-      <div class="presets" id="presets"></div>
+      <div class="mb-4 grid grid-cols-3 gap-2" id="presets"></div>
 
-      <div class="grid" id="controls"></div>
+      <div class="grid grid-cols-2 gap-2.5" id="controls"></div>
 
-      <div class="footer">
-        <button class="preset" id="refresh">Refresh Selection</button>
-        <button class="apply" id="apply">Create / Update</button>
+      <div class="mt-4 grid grid-cols-2 gap-2.5">
+        <button class="cursor-pointer border border-white/10 bg-panel px-3 py-2.5 text-ash transition-colors hover:bg-panelSoft" id="refresh">Refresh Selection</button>
+        <button class="cursor-pointer border border-white/10 bg-[linear-gradient(180deg,#a11d2d,#5d0e17)] px-3 py-2.5 font-bold uppercase tracking-[0.08em] text-ash transition-opacity hover:opacity-95" id="apply">Create / Update</button>
       </div>
 
-      <div class="note">
+      <div class="mt-3 text-[11px] text-mist">
         The source text stays editable inside the generated frame. Edit that layer, then run the plugin again to regenerate.
       </div>
     </div>
@@ -251,17 +144,22 @@
         ["dripLength", "Drip Length", 0, 120, 1]
       ];
 
-      const state = { ...PRESETS.necrotic };
+      const state = Object.assign({}, PRESETS.necrotic);
       const controlsEl = document.getElementById("controls");
       const presetsEl = document.getElementById("presets");
       const statusEl = document.getElementById("status");
       const inputs = {};
+      const presetClassName =
+        "cursor-pointer border border-white/10 bg-panel px-3 py-2.5 text-ash transition-colors hover:bg-panelSoft";
+      const activePresetClassName =
+        "border-fog/40 bg-[linear-gradient(180deg,rgba(141,23,35,0.5),rgba(22,18,24,1))] text-fog";
 
       function renderPresets() {
         presetsEl.innerHTML = "";
         Object.entries(PRESETS).forEach(([key, preset]) => {
           const button = document.createElement("button");
-          button.className = "preset" + (state.preset === key ? " active" : "");
+          button.className =
+            presetClassName + (state.preset === key ? " " + activePresetClassName : "");
           button.textContent = key;
           button.addEventListener("click", () => {
             Object.assign(state, preset);
@@ -275,13 +173,16 @@
         controlsEl.innerHTML = "";
         CONTROLS.forEach(([key, label, min, max, step]) => {
           const wrap = document.createElement("div");
-          wrap.className = "control";
+          wrap.className = "border border-white/10 bg-white/[0.03] p-2.5";
 
           const title = document.createElement("label");
-          title.innerHTML = `<span>${label}</span><output id="${key}-out"></output>`;
+          title.className =
+            "mb-2 flex items-baseline justify-between gap-2.5 text-[10px] uppercase tracking-[0.08em] text-mist";
+          title.innerHTML = `<span>${label}</span><output class="text-ash" id="${key}-out"></output>`;
 
           const input = document.createElement("input");
           input.type = "range";
+          input.className = "block w-full cursor-pointer accent-[#b2313c]";
           input.min = String(min);
           input.max = String(max);
           input.step = String(step);
