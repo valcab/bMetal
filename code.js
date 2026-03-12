@@ -295,13 +295,6 @@ function addHalo(parent, width, height, settings, rng) {
   halo.y = (height - halo.height) / 2;
   halo.fills = [solidPaint(0.02)];
   halo.opacity = settings.halo;
-  halo.effects = [
-    {
-      type: "LAYER_BLUR",
-      radius: 28 + settings.halo * 120,
-      visible: true
-    }
-  ];
   parent.appendChild(halo);
 
   const hazeCount = Math.max(0, Math.round(settings.haze * 10));
@@ -314,13 +307,6 @@ function addHalo(parent, width, height, settings, rng) {
     mist.rotation = -18 + rng() * 36;
     mist.fills = [solidPaint(0.02)];
     mist.opacity = 0.05 + settings.haze * 0.16;
-    mist.effects = [
-      {
-        type: "LAYER_BLUR",
-        radius: 12 + rng() * 22,
-        visible: true
-      }
-    ];
     parent.appendChild(mist);
   }
 }
@@ -454,16 +440,6 @@ function createSpike(length, thickness, chaos, rng) {
   spike.cornerRadius = Math.max(0.4, thickness * 0.46);
   spike.fills = [solidPaint(0.02)];
   spike.opacity = clamp(0.74 + chaos * 0.16 + rng() * 0.12, 0.72, 1);
-  spike.effects = [
-    {
-      type: "DROP_SHADOW",
-      color: { r: 0, g: 0, b: 0, a: 0.1 + chaos * 0.12 },
-      offset: { x: 0, y: 0 },
-      radius: 2 + chaos * 6,
-      spread: 0,
-      visible: true
-    }
-  ];
   return spike;
 }
 
