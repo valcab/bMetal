@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Black Metal Typography</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0d0d0f;
+        --panel: #161218;
+        --panel-2: #1f1820;
+        --ink: #f5f2ef;
+        --muted: #aaa1a6;
+        --accent: #d8d0c6;
+        --blood: #8d1723;
+        --line: rgba(255, 255, 255, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font: 12px/1.4 Georgia, "Times New Roman", serif;
+        background:
+          radial-gradient(circle at top, rgba(141, 23, 35, 0.24), transparent 32%),
+          linear-gradient(180deg, #09090a 0%, #120f13 60%, #0d0d0f 100%);
+        color: var(--ink);
+      }
+
+      .shell {
+        padding: 16px;
+      }
+
+      .hero {
+        border: 1px solid var(--line);
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent 55%),
+          linear-gradient(180deg, rgba(141, 23, 35, 0.18), rgba(0, 0, 0, 0.22));
+        padding: 14px;
+        margin-bottom: 14px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 20px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+
+      .sub {
+        margin-top: 6px;
+        color: var(--muted);
+      }
+
+      .status {
+        margin-top: 8px;
+        padding: 8px 10px;
+        border-left: 2px solid var(--blood);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--accent);
+        min-height: 34px;
+      }
+
+      .presets {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      .preset,
+      .apply {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--ink);
+        padding: 9px 10px;
+        cursor: pointer;
+      }
+
+      .preset.active {
+        background: linear-gradient(180deg, rgba(141, 23, 35, 0.5), rgba(22, 18, 24, 1));
+        border-color: rgba(216, 208, 198, 0.4);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .control {
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.03);
+        padding: 10px;
+      }
+
+      .control label {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 10px;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 10px;
+        color: var(--muted);
+      }
+
+      .control output {
+        color: var(--ink);
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: #b2313c;
+      }
+
+      .footer {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .apply {
+        background: linear-gradient(180deg, #a11d2d, #5d0e17);
+        border-color: rgba(255, 255, 255, 0.1);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .note {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="hero">
+        <h1>Black Metal Typography</h1>
+        <div class="sub">Editable text with procedural thorns, frost, haze, and dripping symmetry.</div>
+        <div class="status" id="status">Select a text layer to begin.</div>
+      </div>
+
+      <div class="presets" id="presets"></div>
+
+      <div class="grid" id="controls"></div>
+
+      <div class="footer">
+        <button class="preset" id="refresh">Refresh Selection</button>
+        <button class="apply" id="apply">Create / Update</button>
+      </div>
+
+      <div class="note">
+        The source text stays editable inside the generated frame. Edit that layer, then run the plugin again to regenerate.
+      </div>
+    </div>
+
+    <script>
+      const PRESETS = {
+        necrotic: {
+          preset: "necrotic",
+          seed: 13,
+          branches: 42,
+          branchLength: 96,
+          branchWeight: 5,
+          chaos: 0.56,
+          symmetry: 0.72,
+          cloneLayers: 7,
+          cloneSpread: 10,
+          tracking: 0,
+          verticalStretch: 1.06,
+          coreWeightBoost: 0,
+          halo: 0.28,
+          haze: 0.2,
+          frost: 0.18,
+          drips: 8,
+          dripLength: 38,
+          padding: 56
+        },
+        frostbitten: {
+          preset: "frostbitten",
+          seed: 27,
+          branches: 58,
+          branchLength: 112,
+          branchWeight: 4,
+          chaos: 0.44,
+          symmetry: 0.84,
+          cloneLayers: 9,
+          cloneSpread: 8,
+          tracking: 4,
+          verticalStretch: 1.14,
+          coreWeightBoost: 0,
+          halo: 0.18,
+          haze: 0.12,
+          frost: 0.46,
+          drips: 3,
+          dripLength: 18,
+          padding: 60
+        },
+        feral: {
+          preset: "feral",
+          seed: 81,
+          branches: 72,
+          branchLength: 126,
+          branchWeight: 6,
+          chaos: 0.76,
+          symmetry: 0.48,
+          cloneLayers: 12,
+          cloneSpread: 15,
+          tracking: -4,
+          verticalStretch: 1.1,
+          coreWeightBoost: 2,
+          halo: 0.34,
+          haze: 0.34,
+          frost: 0.08,
+          drips: 14,
+          dripLength: 54,
+          padding: 74
+        }
+      };
+
+      const CONTROLS = [
+        ["seed", "Seed", 1, 9999, 1],
+        ["branches", "Branches", 8, 160, 1],
+        ["branchLength", "Branch Length", 20, 220, 1],
+        ["branchWeight", "Branch Weight", 1, 18, 0.5],
+        ["chaos", "Chaos", 0, 1, 0.01],
+        ["symmetry", "Symmetry", 0, 1, 0.01],
+        ["cloneLayers", "Clone Layers", 0, 20, 1],
+        ["cloneSpread", "Clone Spread", 0, 40, 1],
+        ["tracking", "Tracking", -40, 80, 1],
+        ["verticalStretch", "Vertical Stretch", 0.7, 1.6, 0.01],
+        ["coreWeightBoost", "Core Stroke", 0, 12, 0.5],
+        ["halo", "Halo", 0, 1, 0.01],
+        ["haze", "Haze", 0, 1, 0.01],
+        ["frost", "Frost", 0, 1, 0.01],
+        ["drips", "Drips", 0, 40, 1],
+        ["dripLength", "Drip Length", 0, 120, 1]
+      ];
+
+      const state = { ...PRESETS.necrotic };
+      const controlsEl = document.getElementById("controls");
+      const presetsEl = document.getElementById("presets");
+      const statusEl = document.getElementById("status");
+      const inputs = {};
+
+      function renderPresets() {
+        presetsEl.innerHTML = "";
+        Object.entries(PRESETS).forEach(([key, preset]) => {
+          const button = document.createElement("button");
+          button.className = "preset" + (state.preset === key ? " active" : "");
+          button.textContent = key;
+          button.addEventListener("click", () => {
+            Object.assign(state, preset);
+            render();
+          });
+          presetsEl.appendChild(button);
+        });
+      }
+
+      function renderControls() {
+        controlsEl.innerHTML = "";
+        CONTROLS.forEach(([key, label, min, max, step]) => {
+          const wrap = document.createElement("div");
+          wrap.className = "control";
+
+          const title = document.createElement("label");
+          title.innerHTML = `<span>${label}</span><output id="${key}-out"></output>`;
+
+          const input = document.createElement("input");
+          input.type = "range";
+          input.min = String(min);
+          input.max = String(max);
+          input.step = String(step);
+          input.value = String(state[key]);
+          input.addEventListener("input", () => {
+            state[key] = step < 1 ? Number(input.value) : Math.round(Number(input.value));
+            renderOutputs();
+          });
+
+          wrap.appendChild(title);
+          wrap.appendChild(input);
+          controlsEl.appendChild(wrap);
+          inputs[key] = input;
+        });
+      }
+
+      function renderOutputs() {
+        CONTROLS.forEach(([key]) => {
+          const out = document.getElementById(`${key}-out`);
+          const value = state[key];
+          out.textContent =
+            Number.isInteger(value) || Math.abs(value) >= 10 ? String(value) : value.toFixed(2);
+        });
+      }
+
+      function render() {
+        renderPresets();
+        Object.entries(inputs).forEach(([key, input]) => {
+          input.value = String(state[key]);
+        });
+        renderOutputs();
+      }
+
+      document.getElementById("refresh").addEventListener("click", () => {
+        parent.postMessage({ pluginMessage: { type: "get-selection" } }, "*");
+      });
+
+      document.getElementById("apply").addEventListener("click", () => {
+        parent.postMessage({ pluginMessage: { type: "apply", settings: state } }, "*");
+      });
+
+      window.onmessage = (event) => {
+        const msg = event.data.pluginMessage;
+        if (!msg) return;
+
+        if (msg.type === "selection") {
+          statusEl.textContent = msg.payload.message;
+          if (msg.payload.settings) {
+            Object.assign(state, msg.payload.settings);
+            render();
+          }
+        }
+
+        if (msg.type === "applied") {
+          statusEl.textContent = msg.payload.action === "created"
+            ? "Generated editable black metal typography."
+            : "Updated the selected black metal typography.";
+        }
+
+        if (msg.type === "error") {
+          statusEl.textContent = msg.message;
+        }
+      };
+
+      renderPresets();
+      renderControls();
+      renderOutputs();
+      parent.postMessage({ pluginMessage: { type: "get-selection" } }, "*");
+    </script>
+  </body>
+</html>
